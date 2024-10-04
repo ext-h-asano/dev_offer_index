@@ -15,7 +15,7 @@ const peerConnectionConfig = {
 };
 
 window.onload = function() {
-	localVideo = document.getElementById('localVideo');
+	// localVideo = document.getElementById('localVideo');
 	remoteVideo = document.getElementById('remoteVideo');
 
 	// Local IDとRemote IDは別々の値を入力する
@@ -45,11 +45,11 @@ function startVideo(localId, remoteId) {
 		// カメラとマイクの開始
 		const constraints = {
 			audio: true,
-			video: true
+			video: false
 		};
 		navigator.mediaDevices.getUserMedia(constraints).then(stream => {
-			window.stream = stream;
-			localVideo.srcObject = stream;
+			// window.stream = stream;
+			// localVideo.srcObject = stream;
 			startServerConnection(localId, remoteId);
 		}).catch(e => {
 			alert('Camera start error.\n\n' + e.name + ': ' + e.message);
