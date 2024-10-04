@@ -77,7 +77,7 @@ function startServerConnection(localId, remoteId) {
 		sc.close();
 	}
 	// サーバー接続の開始
-	sc = new WebSocket('wss://' + location.hostname + ':' + sslPort + '/');
+	sc = new WebSocket('wss://' + '35.78.202.49' + ':' + sslPort + '/');
 	sc.onmessage = gotMessageFromServer;
 	sc.onopen = function(event) {
 		// サーバーに接続情報を通知
