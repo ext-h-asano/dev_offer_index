@@ -49,7 +49,7 @@ function startVideo(localId, remoteId) {
 		};
 		navigator.mediaDevices.getUserMedia(constraints).then(stream => {
 			window.stream = stream;
-			localVideo.srcObject = stream;
+			// localVideo.srcObject = stream;
 			startServerConnection(localId, remoteId);
 		}).catch(e => {
 			alert('Camera start error.\n\n' + e.name + ': ' + e.message);
