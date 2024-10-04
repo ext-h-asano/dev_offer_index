@@ -15,7 +15,7 @@ const peerConnectionConfig = {
 };
 
 window.onload = function() {
-	// localVideo = document.getElementById('localVideo');
+	localVideo = document.getElementById('localVideo');
 	remoteVideo = document.getElementById('remoteVideo');
 
 	// Local IDとRemote IDは別々の値を入力する
@@ -30,7 +30,7 @@ window.onload = function() {
 }
 
 function startVideo(localId, remoteId) {
-	if (navigator.mediaDevices.getUserMedia) {
+	if (navigator.mediaDevices.getDisplayMedia) {
 		if (window.stream) {
 			// 既存のストリームを破棄
 			try {
@@ -45,11 +45,11 @@ function startVideo(localId, remoteId) {
 		// カメラとマイクの開始
 		const constraints = {
 			audio: true,
-			video: false
+			video: true
 		};
-		navigator.mediaDevices.getUserMedia(constraints).then(stream => {
-			// window.stream = stream;
-			// localVideo.srcObject = stream;
+		navigator.mediaDevices.getDisplayMedia(constraints).then(stream => {
+			window.stream = stream;
+			localVideo.srcObject = stream;
 			startServerConnection(localId, remoteId);
 		}).catch(e => {
 			alert('Camera start error.\n\n' + e.name + ': ' + e.message);
@@ -103,16 +103,16 @@ function startPeerConnection(sdpType) {
 	queue = new Array();
 	pc = new RTCPeerConnection(peerConnectionConfig);
 
-
 	// コネクション状態の変更を監視
 	pc.onconnectionstatechange = function() {
 		console.log('Connection State:', pc.connectionState);
 		if (pc.connectionState === 'connected') {
-				console.log('Peer connection established successfully.');
+			console.log('Peer connection established successfully.');
 		} else if (pc.connectionState === 'disconnected' || pc.connectionState === 'failed') {
-				console.log('Peer connection failed or disconnected.');
+			console.log('Peer connection failed or disconnected.');
 		}
 	};
+
 	pc.onicecandidate = function(event) {
 		if (event.candidate) {
 			// ICE送信
@@ -125,7 +125,6 @@ function startPeerConnection(sdpType) {
 	}
 	pc.ontrack = function(event) {
 		// Remote側のストリームを設定
-		console.log("届いてる")
 		if (event.streams && event.streams[0]) {
 			remoteVideo.srcObject = event.streams[0];
 		} else {
