@@ -15,7 +15,7 @@ const peerConnectionConfig = {
 };
 
 window.onload = function() {
-	localVideo = document.getElementById('localVideo');
+	// localVideo = document.getElementById('localVideo');
 	remoteVideo = document.getElementById('remoteVideo');
 
 	// Local IDとRemote IDは別々の値を入力する
