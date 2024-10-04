@@ -45,7 +45,7 @@ function startVideo(localId, remoteId) {
 		// カメラとマイクの開始
 		const constraints = {
 			audio: true,
-			video: true
+			video: false
 		};
 		navigator.mediaDevices.getUserMedia(constraints).then(stream => {
 			window.stream = stream;
