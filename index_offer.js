@@ -114,6 +114,7 @@ function startPeerConnection(sdpType) {
 	}
 	pc.ontrack = function(event) {
 		// Remote側のストリームを設定
+		console.log("届いてる")
 		if (event.streams && event.streams[0]) {
 			remoteVideo.srcObject = event.streams[0];
 		} else {
