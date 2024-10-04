@@ -30,7 +30,7 @@ window.onload = function() {
 }
 
 function startVideo(localId, remoteId) {
-	if (navigator.mediaDevices.getDisplayMedia) {
+	if (navigator.mediaDevices.getUserMedia) {
 		if (window.stream) {
 			// 既存のストリームを破棄
 			try {
@@ -47,7 +47,7 @@ function startVideo(localId, remoteId) {
 			audio: true,
 			video: true
 		};
-		navigator.mediaDevices.getDisplayMedia(constraints).then(stream => {
+		navigator.mediaDevices.getUserMedia(constraints).then(stream => {
 			window.stream = stream;
 			localVideo.srcObject = stream;
 			startServerConnection(localId, remoteId);
