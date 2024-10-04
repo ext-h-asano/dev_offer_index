@@ -102,6 +102,17 @@ function startPeerConnection(sdpType) {
 	stopPeerConnection();
 	queue = new Array();
 	pc = new RTCPeerConnection(peerConnectionConfig);
+
+
+	// コネクション状態の変更を監視
+	pc.onconnectionstatechange = function() {
+		console.log('Connection State:', pc.connectionState);
+		if (pc.connectionState === 'connected') {
+				console.log('Peer connection established successfully.');
+		} else if (pc.connectionState === 'disconnected' || pc.connectionState === 'failed') {
+				console.log('Peer connection failed or disconnected.');
+		}
+	};
 	pc.onicecandidate = function(event) {
 		if (event.candidate) {
 			// ICE送信
