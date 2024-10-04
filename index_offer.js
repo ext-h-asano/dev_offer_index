@@ -15,6 +15,7 @@ const peerConnectionConfig = {
 };
 
 window.onload = function() {
+	localVideo = document.getElementById('localVideo');
 	remoteVideo = document.getElementById('remoteVideo');
 
 	// Local IDとRemote IDは別々の値を入力する
@@ -107,10 +108,10 @@ function startPeerConnection(sdpType) {
 			sc.send(JSON.stringify({ice: event.candidate, remote: remoteId}));
 		}
 	};
-	// if (window.stream) {
-	// 	// Local側のストリームを設定
-	// 	window.stream.getTracks().forEach(track => pc.addTrack(track, window.stream));
-	// }
+	if (window.stream) {
+		// Local側のストリームを設定
+		window.stream.getTracks().forEach(track => pc.addTrack(track, window.stream));
+	}
 	pc.ontrack = function(event) {
 		// Remote側のストリームを設定
 		if (event.streams && event.streams[0]) {
