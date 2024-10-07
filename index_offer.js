@@ -142,6 +142,8 @@ function startPeerConnection(sdpType) {
 		}
 	};
 	if (sdpType === 'offer') {
+		//データチャンネルの作成
+		createDataChannel();
 		// Offerの作成
 		pc.createOffer().then(setDescription).catch(errorHandler);
 	}
@@ -207,6 +209,15 @@ function setDescription(description) {
 		// SDP送信
 		sc.send(JSON.stringify({sdp: pc.localDescription, remote: remoteId}));
 	}).catch(errorHandler);
+}
+
+// データチャンネルを作成する関数
+function createDataChannel() {
+    const dataChannel = pc.createDataChannel('myDataChannel');
+    dataChannel.onopen = () => console.log('Local data channel state is open.');
+    dataChannel.onclose = () => console.log('Local data channel state is closed.');
+    dataChannel.onerror = (error) => console.log('Local data channel error:', error);
+    return dataChannel;
 }
 
 function errorHandler(error) {
