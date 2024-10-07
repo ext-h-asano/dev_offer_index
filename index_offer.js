@@ -103,6 +103,15 @@ function startPeerConnection(sdpType) {
 	queue = new Array();
 	pc = new RTCPeerConnection(peerConnectionConfig);
 
+    // データチャンネルが開設された時のログ出力
+    pc.ondatachannel = function(event) {
+        console.log('Data channel is opened:', event.channel.label);
+        event.channel.onopen = () => console.log('Data channel state is open.');
+        event.channel.onclose = () => console.log('Data channel state is closed.');
+        event.channel.onerror = (error) => console.log('Data channel error:', error);
+    };
+
+
 	// コネクション状態の変更を監視
 	pc.onconnectionstatechange = function() {
 		console.log('Connection State:', pc.connectionState);
