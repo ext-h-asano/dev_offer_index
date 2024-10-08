@@ -3,7 +3,7 @@ let localId, remoteId;
 let sc, pc, queue;
 let dataChannel; // データチャンネルの参照
 
-const sslPort = 3001;
+const sslPort = 8443;
 const peerConnectionConfig = {
 	iceServers: [
 		// GoogleのパブリックSTUNサーバーを指定しているが自前のSTUNサーバーに変更可
@@ -86,7 +86,7 @@ function startServerConnection(localId, remoteId) {
 		sc.close();
 	}
 	// サーバー接続の開始
-	sc = new WebSocket('ws://' + '52.195.192.65' + ':' + sslPort + '/');
+	sc = new WebSocket('wss://' + '52.195.192.65' + ':' + sslPort + '/');
 	sc.onmessage = gotMessageFromServer;
 	sc.onopen = function(event) {
 		// サーバーに接続情報を通知
