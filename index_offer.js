@@ -156,7 +156,7 @@ function startPeerConnection(sdpType) {
 	};
 	if (sdpType === 'offer') {
 		//データチャンネルの作成
-		createDataChannel();
+		// createDataChannel();
 		// Offerの作成
 		pc.createOffer().then(setDescription).catch(errorHandler);
 	}
