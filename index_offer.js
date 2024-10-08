@@ -1,6 +1,7 @@
 let localVideo, remoteVideo;
 let localId, remoteId;
 let sc, pc, queue;
+let dataChannel; // データチャンネルの参照
 
 const sslPort = 8443;
 const peerConnectionConfig = {
@@ -27,6 +28,14 @@ window.onload = function() {
 		remoteId = window.prompt('Remote ID', '');
 	}
 	startVideo(localId, remoteId);
+
+	// 画面クリック時にメッセージを送信
+	document.body.addEventListener('click', function() {
+		const message = window.prompt('Enter message to send', '');
+		if (message) {
+			sendMessage(message);
+		}
+	});
 }
 
 function startVideo(localId, remoteId) {
@@ -109,6 +118,10 @@ function startPeerConnection(sdpType) {
         event.channel.onopen = () => console.log('Data channel state is open.');
         event.channel.onclose = () => console.log('Data channel state is closed.');
         event.channel.onerror = (error) => console.log('Data channel error:', error);
+		event.channel.onmessage = (event) => {
+            console.log('Received message:', event.data);
+        };
+        dataChannel = event.channel; // データチャンネルの参照を保持
     };
 
 
@@ -213,11 +226,23 @@ function setDescription(description) {
 
 // データチャンネルを作成する関数
 function createDataChannel() {
-    const dataChannel = pc.createDataChannel('myDataChannel');
+    dataChannel = pc.createDataChannel('myDataChannel');
     dataChannel.onopen = () => console.log('Local data channel state is open.');
     dataChannel.onclose = () => console.log('Local data channel state is closed.');
     dataChannel.onerror = (error) => console.log('Local data channel error:', error);
-    return dataChannel;
+    dataChannel.onmessage = (event) => {
+        console.log('Received message:', event.data);
+    };
+}
+
+// メッセージをデータチャンネル経由で送信する関数
+function sendMessage(message) {
+    if (dataChannel && dataChannel.readyState === 'open') {
+        dataChannel.send(message);
+        console.log('Sent message:', message);
+    } else {
+        console.log('Data channel is not open.');
+    }
 }
 
 function errorHandler(error) {
