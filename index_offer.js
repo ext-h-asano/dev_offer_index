@@ -40,7 +40,13 @@ window.onload = function() {
 	// 		sendMessage(message);
 	// 	}
 	// });
-}
+	// タッチ開始時の処理
+	document.body.addEventListener('touchstart', function(e) {
+		startX = e.touches[0].clientX;
+		startY = e.touches[0].clientY;
+		console.log('タッチ開始:', startX, startY);
+	});
+	}
 
 function startVideo(localId, remoteId) {
 	console.log('[startVideo] localId:', localId, ', remoteId:', remoteId);
