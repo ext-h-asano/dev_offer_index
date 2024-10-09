@@ -2,6 +2,10 @@ let localVideo, remoteVideo;
 let localId, remoteId;
 let sc, pc, queue;
 let dataChannel; // データチャンネルの参照
+// タッチ開始位置を保存する変数
+let startX, startY;
+// スワイプと判定する最小距離（ピクセル）
+const SWIPE_THRESHOLD = 50;
 
 const sslPort = 8443;
 const peerConnectionConfig = {
@@ -30,12 +34,12 @@ window.onload = function() {
 	startVideo(localId, remoteId);
 
 	// 画面クリック時にメッセージを送信
-	document.body.addEventListener('click', function() {
-		const message = window.prompt('Enter message to send', '');
-		if (message) {
-			sendMessage(message);
-		}
-	});
+	// document.body.addEventListener('click', function() {
+	// 	const message = window.prompt('Enter message to send', '');
+	// 	if (message) {
+	// 		sendMessage(message);
+	// 	}
+	// });
 }
 
 function startVideo(localId, remoteId) {
@@ -280,6 +284,43 @@ function sendMessage(message) {
         console.log('[sendMessage] Data channel is not open. Cannot send message.');
     }
 }
+
+
+// タッチ開始時の処理
+document.addEventListener('touchstart', function(e) {
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+    console.log('タッチ開始:', startX, startY);
+});
+
+// タッチ終了時の処理
+document.addEventListener('touchend', function(e) {
+    let endX = e.changedTouches[0].clientX;
+    let endY = e.changedTouches[0].clientY;
+    
+    let deltaX = endX - startX;
+    let deltaY = endY - startY;
+    
+    if (Math.abs(deltaX) > SWIPE_THRESHOLD || Math.abs(deltaY) > SWIPE_THRESHOLD) {
+        // スワイプと判定
+        let direction = Math.abs(deltaX) > Math.abs(deltaY) 
+            ? (deltaX > 0 ? '右' : '左')
+            : (deltaY > 0 ? '下' : '上');
+        console.log('スワイプ検知:', direction);
+        console.log('スワイプ開始座標:', startX, startY);
+        console.log('スワイプ終了座標:', endX, endY);
+        console.log('スワイプ距離 X:', deltaX, 'Y:', deltaY);
+		let swipe = {type: "swipe", startX: startX, startY: startY, endX: endX, endY: endY}
+		let jsonSwipe = JSON.stringify(swipe)
+		sendMessage(jsonSwipe)
+    } else {
+        // タップと判定
+        console.log('タップ検知:', endX, endY);
+		let touch = {type: "touch", x: endX, y: endY}
+		let jsonTouch = JSON.stringify(touch)
+		sendMessage(jsonTouch)
+    }
+});
 
 function errorHandler(error) {
 	console.error('[errorHandler] Signaling error:', error);
