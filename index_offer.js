@@ -104,7 +104,7 @@ function startServerConnection(localId, remoteId) {
 	}
 	// サーバー接続の開始
 	sc = new WebSocket('wss://' + '52.194.235.65' + ':' + sslPort + '/');
-	scDataChannel = new WebSocket('wss://' + '52.194.235.65' + ':' + sslDataChannelPort + '/');
+	scDataChannel = new WebSocket('wss://' + '176.34.2.232' + ':' + sslDataChannelPort + '/');
 	sc.onmessage = gotMessageFromServer;
 	sc.onopen = function(event) {
 		console.log('[startServerConnection] WebSocket connection opened.');
