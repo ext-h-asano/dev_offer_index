@@ -1,6 +1,6 @@
 let localVideo, remoteVideo;
 let localId, remoteId;
-let sc, pc, queue;
+let sc, scDataChannel, pc, queue;
 let dataChannel; // データチャンネルの参照
 // タッチ開始位置を保存する変数
 let startX, startY;
@@ -8,6 +8,8 @@ let startX, startY;
 const SWIPE_THRESHOLD = 50;
 
 const sslPort = 8443;
+const sslDataChannelPort = 3001;
+
 const peerConnectionConfig = {
 	iceServers: [
 		// GoogleのパブリックSTUNサーバーを指定しているが自前のSTUNサーバーに変更可
@@ -102,14 +104,31 @@ function startServerConnection(localId, remoteId) {
 	}
 	// サーバー接続の開始
 	sc = new WebSocket('wss://' + '52.194.235.65' + ':' + sslPort + '/');
+	scDataChannel = new WebSocket('wss://' + '52.194.235.65' + ':' + sslDataChannelPort + '/');
 	sc.onmessage = gotMessageFromServer;
 	sc.onopen = function(event) {
 		console.log('[startServerConnection] WebSocket connection opened.');
 		// サーバーに接続情報を通知
 		this.send(JSON.stringify({open: {local: localId, remote: remoteId}}));
 	};
+
+	scDataChannel.onopen = function(event) {
+		console.log('[startServerConnection] scDataChannel connection opened.');
+		// サーバーに接続情報を通知
+		this.send(JSON.stringify({open: {local: localId, remote: remoteId}}));
+	};
 	sc.onclose = function(event) {
 		console.log('[startServerConnection] WebSocket connection closed. Reconnecting in 5 seconds...');
+		clearInterval(this._pingTimer);
+		setTimeout(conn => {
+			if (sc === conn) {
+				// 一定時間経過後にサーバーへ再接続
+				startServerConnection(localId, remoteId);
+			}
+		}, 5000, this);
+	}
+	scDataChannel.onclose = function(event) {
+		console.log('[startServerConnection] scDataChannel connection closed. Reconnecting in 5 seconds...');
 		clearInterval(this._pingTimer);
 		setTimeout(conn => {
 			if (sc === conn) {
@@ -178,7 +197,7 @@ function startPeerConnection(sdpType) {
 	};
 	if (sdpType === 'offer') {
 		//データチャンネルの作成
-		createDataChannel();
+		//createDataChannel();
 		console.log('[startPeerConnection] Creating offer.');
 		// Offerの作成
 		pc.createOffer().then(setDescription).catch(errorHandler);
@@ -313,13 +332,13 @@ document.addEventListener('touchend', function(e) {
         console.log('スワイプ距離 X:', deltaX, 'Y:', deltaY);
 		let swipe = {type: "swipe", startX: startX, startY: startY, endX: endX, endY: endY}
 		let jsonSwipe = JSON.stringify(swipe)
-		sendMessage(jsonSwipe)
+		scDataChannel.send(jsonSwipe)
     } else {
         // タップと判定
         console.log('タップ検知:', endX, endY);
 		let touch = {type: "touch", x: endX, y: endY}
 		let jsonTouch = JSON.stringify(touch)
-		sendMessage(jsonTouch)
+		scDataChannel.send(jsonTouch)
     }
 });
 
