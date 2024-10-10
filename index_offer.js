@@ -333,6 +333,7 @@ document.addEventListener('touchend', function(e) {
 		let swipe = {type: "swipe", startX: startX, startY: startY, endX: endX, endY: endY}
 		let jsonSwipe = JSON.stringify(swipe)
 		scDataChannel.send(jsonSwipe)
+		print("soushin")
     } else {
         // タップと判定
         console.log('タップ検知:', endX, endY);
